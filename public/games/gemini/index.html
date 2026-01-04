@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head style="background-color: transparent;">
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat With Gemini</title>
+    <div class="background">
+        <canvas id="canvas"></canvas>
+        <style>
+        .canvas {
+            overflow: hidden;
+            background: black;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            z-index: -1; /* Use fixed positioning to cover the viewport */
+            top: 0; /* Align to the top */
+            left: 0; /* Align to the left */
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            z-index: -1; /* Send the canvas to the back */
+        }
+        </style>
+        <script>
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            let particles = [];
+            
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 4 + 1;
+                    this.speedX = Math.random() * 2 - 0.1;
+                    this.speedY = Math.random() * 2 - 0.1;
+                    this.color = 'rgba(255, 255, 255, 0.8)';
+                }
+            
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+            
+                    if (this.size > 0.2) this.size -= 0.1;
+                }
+            
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            function init() {
+                for (let i = 0; i < 100; i++) {
+                    particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+                }
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((particle, index) => {
+                    particle.update();
+                    particle.draw();
+            
+                    if (particle.size <= 0.2) {
+                        particles.splice(index, 1);
+                        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+                    }
+                });
+                requestAnimationFrame(animate);
+            }
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+            
+            init();
+            animate();
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas(); // Set initial size
+            init();
+            animate();
+        </script>
+    </div>
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            margin: 0;
+            padding: 20px;
+            margin: 0px;
+            position: relative;
+            background-color: black;
+            box-sizing: border-box;
+        }
+        #chat-container {
+            margin: auto;
+            background: rgb(31, 31, 31);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgb(0, 0, 0);
+            padding: 20px;
+            z-index: 1;
+            width: 1300px;
+            border-radius: 5px;
+            border: 2px solid transparent; /* Set a solid border with transparent color */      
+            border-color: pink;
+        }
+        #messages {
+            height: 525px;
+            overflow-y: auto;
+            border: 1px solid #555555;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 2.5px;
+            
+        }
+        #api {
+            text-align: center
+        }
+        .message {
+            margin: 5px 0;
+        }
+        .user {
+            text-align: right;
+            color: blue;
+        }
+        .messages#ai {
+            color: green; /* More specific */
+        }
+        .message.api {
+            color: green;
+            
+        }
+        
+        #chat-container #ai {
+            color: green; /* More specific */
+            text-align: left;
+        }
+        #user-input {
+            width: calc(100% - 100px);
+            padding: 10px;
+            border: 1px solid #3a3a3a;
+            border-radius: 5px;
+            background-color: #3a3a3a;
+            color: white;
+        }
+        #send-button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+        
+        .title h1 {
+            text-align: center;
+            color: antiquewhite;
+        }
+       
+        
+        #apikey {
+            width: calc(100% - 100px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 185px;
+            background-color: rgb(30, 30, 30);
+            color: white;
+            float: center;
+        }
+        #apisubmit {
+            padding: 10px;
+            border: none;
+            background-color: rgb(150, 0, 0);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            float: center;
+        }
+        #apisubmit:hover {
+            background-color: rgb(100, 0, 0);
+        }
+        
+        
+    </style>
+</head>
+<body style="background-color: transparent;">
+<div class="title" style="background-color: transparent; position: relative;">
+    <h1>Gemini AI chat</h1>
+</div>
+<div id="chat-container">
+    <div id="api">
+        <input type="password" id="apikey" placeholder="Your API key here" />
+        <button id="apisubmit">Use Key</button>
+    </div>
+    <p style="margin:10px"></p>
+    <div id="messages"></div>
+    <p style="margin:10px"></p>
+    <input type="text" id="user-input" placeholder="Type your message here... (It will not save what you said last time. It can't remember things because it's an API)" />
+    <button id="send-button">Send</button>
+    <p style="margin:10px"></p>
+    <div id="tokens" style="border: 1px; border-radius: 5px; border-color: turquoise; display: flex;">
+        <div id="inputtokens" style="color: blue; padding: 4px; display: inline-block;">Input Tokens: --</div>
+        <div id="outputtokens" style="color: green; padding:4px; display: inline-block;">Output Tokens: --</div>
+    </div>
+</div>
+<script>
+    function checkStringLength(str, minLength) {
+        if (typeof str !== 'string') {
+            return false; // Not a string, so it fails
+        }
+        return str.length === minLength; // Returns true if length is at least minLength, false otherwise
+    }
+
+
+    let apiKey = '';
+
+    document.getElementById('apisubmit').addEventListener('click', () => {
+        apiKey = document.getElementById('apikey').value;
+        if (!apiKey || !checkStringLength(apiKey, 39)) {
+            alert('Please enter a valid API key.');
+            return;
+        }
+        alert('API key used!');
+    });
+
+    document.getElementById('send-button').addEventListener('click', async () => {
+        const userInput = document.getElementById('user-input').value;
+        if (!userInput) return;
+
+        // Display user message
+        displayMessage(userInput, 'user');
+        document.getElementById('user-input').value = '';
+
+        // Construct the API URL
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        console.log('Used:  ', apiUrl)
+        // Send request to the API
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "contents": [{
+                        "parts": [{"text": userInput}] // Use the actual user input
+                    }]
+                }),
+            });
+
+            // Check if the response is ok
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+                displayMessage('Error', 'api')
+            }
+
+            const data = await response.json();
+            console.log(data); // Log the entire response for debugging
+
+            // Assuming the response structure contains the generated text
+            // Adjust the following line based on the actual response structure
+            const generatedText = data.candidates[0].content.parts[0].text; // Adjust this line as needed
+            const inputTokens = data.usageMetadata.promptTokenCount;
+            const outputTokens = data.usageMetadata.candidatesTokenCount;
+            // Display the generated text from the API
+            displayMessage(generatedText, 'api');
+            displayinTokens(inputTokens, 'inputtokens')
+            displayoutTokens(outputTokens, 'outputtokens')
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+            alert('Error: ' + error.message); // Alert the user about the error
+        }
+    });
+
+    function displayMessage(message, sender) {
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message ' + sender;
+        messageDiv.textContent = message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom
+    }
+    function displayinTokens(message, sender) {
+        const messagesDiv = document.getElementById('tokens');
+        const messageDiv = document.createElement('div');
+        const inputEmpty = document.getElementById('inputtokens')
+        messageDiv.id = sender;
+        messageDiv.style = "color: blue; padding: 4px; display: inline-block;"
+        messageDiv.textContent = "Input Tokens: " + message;
+        messagesDiv.replaceChild(messageDiv, inputEmpty);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom
+    }
+    function displayoutTokens(message, sender) {
+        const messagesDiv = document.getElementById('tokens');
+        const messageDiv = document.createElement('div');
+        const outputEmpty = document.getElementById('outputtokens')
+        messageDiv.id = sender;
+        messageDiv.style = "color: green; padding:4px; display: inline-block;"
+        messageDiv.textContent = "Output Tokens: " + message;
+        messagesDiv.replaceChild(messageDiv, outputEmpty);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom
+    }
+</script>
+</body>
+</html>

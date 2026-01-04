@@ -1,0 +1,369 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('/assets/images/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.desktop {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+}
+
+.desktop.taskbar-visible {
+    height: calc(100vh - 60px);
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: calc(100vh - 60px);
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(10px);
+    transform: translateX(-100%);
+    z-index: 500;
+    border-right: 2px solid rgba(255, 255, 255, 0.1);
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #2e2e2e 0%, #000000 100%);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-content {
+    padding: 10px;
+}
+
+.game-button {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.game-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+
+.taskbar-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.taskbar {
+    height: 70px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.taskbar-button {
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.taskbar-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.taskbar-button:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.taskbar-button svg {
+    width: 30px;
+    height: 30px;
+    fill: white;
+}
+
+.window {
+    position: absolute;
+    min-width: 400px;
+    min-height: 300px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    display: none;
+    flex-direction: column;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.window.active {
+    display: flex;
+}
+
+.window.dragging,
+.window.resizing {
+    user-select: none;
+}
+
+.window.dragging iframe,
+.window.resizing iframe {
+    pointer-events: none;
+}
+
+.window-header {
+    background: black;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    user-select: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.window-title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.window-control-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.window-control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.window-control-btn.close:hover {
+    background: #e74c3c;
+    border-color: #c0392b;
+}
+
+.window-control-btn.reload:hover {
+    background: #3498db;
+    border-color: #2980b9;
+}
+
+.window-content {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0 0 6px 6px;
+}
+
+.window-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+.window.fullscreen {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: calc(100vh - 60px) !important;
+    border-radius: 0;
+    border: none;
+}
+
+.window.fullscreen .window-header {
+    border-radius: 0;
+}
+
+.window.fullscreen .window-content {
+    border-radius: 0;
+}
+
+/* Resize handles */
+.resize-handle {
+    position: absolute;
+    z-index: 10;
+}
+
+.resize-n {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    cursor: n-resize;
+}
+
+.resize-s {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    cursor: s-resize;
+}
+
+.resize-e {
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: e-resize;
+}
+
+.resize-w {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: w-resize;
+}
+
+.resize-ne {
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    cursor: ne-resize;
+}
+
+.resize-nw {
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nw-resize;
+}
+
+.resize-se {
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    cursor: se-resize;
+}
+
+.resize-sw {
+    bottom: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    cursor: sw-resize;
+}
+
+#time {
+    color: antiquewhite;
+    transition: all 0.2s ease;
+}
+
+#time:hover {
+    transform: rotate(5deg);
+}
+
+.header {
+    color: antiquewhite;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    font-size: 20px;
+    padding-left: 10px;
+    position: fixed;
+    z-index: -1;
+    pointer-events: none;
+    padding-right: 100%;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.window-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    padding: 8px 10px;
+}
+
+.window-nav {
+    display: flex;
+    gap: 6px;
+}
+
+.nav-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.centered-title {
+    justify-self: center;
+    pointer-events: none;
+    font-weight: 600;
+}

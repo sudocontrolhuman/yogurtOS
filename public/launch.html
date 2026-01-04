@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clickable Squares</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .square {
+            background: rgb(37, 37, 37);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .square::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .square:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .square:hover::before {
+            opacity: 0.1;
+        }
+
+        .square-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .square-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .square-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #d6d6d6;
+            margin-bottom: 10px;
+        }
+
+        .square-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            font-size: 48px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="grid">
+            <div class="square" onclick="openPopup('/p.html')">
+                <div class="square-content">
+                    <div class="square-title">Browser</div>
+                    <div class="square-subtitle">Click to open</div>
+                </div>
+            </div>
+            <div class="square" onclick="openPopup('/youtube.html')">
+                <div class="square-content">
+                    <div class="square-title">Youtube</div>
+                    <div class="square-subtitle">Click to open</div>
+                </div>
+            </div>
+            <div class="square" onclick="openPopup('/git.html')">
+                <div class="square-content">
+                    <div class="square-title">GitHub</div>
+                    <div class="square-subtitle">Click to open</div>
+                </div>
+            </div>
+            <div class="square" onclick="openPopup('/games/index.html')">
+                <div class="square-content">
+                    <div class="square-title">Games</div>
+                    <div class="square-subtitle">Click to open</div>
+                </div>
+            </div>
+            <div class="square" onclick="openPopup('/calc.html')">
+                <div class="square-content">
+                    <div class="square-title">Calculator</div>
+                    <div class="square-subtitle">Click to open</div>
+                </div>
+            </div>
+            <div class="square" onclick="openPopup('/htmlfile.html')">
+                <div class="square-content">
+                    <div class="square-title">HTML Editor</div>
+                    <div class="square-subtitle">Click to open</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPopup(url) {
+            const width = 800;
+            const height = 600;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            
+            window.open(
+                url,
+                '_blank',
+                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+            );
+        }
+    </script>
+</body>
+</html>

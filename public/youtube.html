@@ -1,0 +1,60 @@
+<script src="/scram/scramjet.all.js"></script>
+<script src="baremux/index.js"></script>
+<script src="epoxy/index.js"></script>
+<script src="register-sw.js"></script>
+<script>
+	const { ScramjetController } = $scramjetLoadController();
+
+	const scramjet = new ScramjetController({
+		files: {
+			wasm: '/scram/scramjet.wasm.wasm',
+			all: '/scram/scramjet.all.js',
+			sync: '/scram/scramjet.sync.js',
+		},
+	});
+
+	scramjet.init();
+
+	const connection = new BareMux.BareMuxConnection('/baremux/worker.js');
+
+	async function launch() {
+
+		try {
+			await registerSW();
+		} catch (err) {
+			error.textContent = 'Failed to register service worker.';
+			errorCode.textContent = err.toString();
+			throw err;
+		}
+
+		const url = 'https://youtube.com/';
+
+		let wispUrl =
+			(location.protocol === 'https:' ? 'wss' : 'ws') +
+			'://' +
+			location.host +
+			'/wisp/';
+
+		if ((await connection.getTransport()) !== '/epoxy/index.mjs') {
+			await connection.setTransport('/epoxy/index.mjs', [{ wisp: wispUrl }]);
+		}
+
+		const frame = scramjet.createFrame();
+		frame.frame.id = 'frame';
+		document.body.appendChild(frame.frame);
+		frame.go(url);
+	}
+
+	launch();
+</script>
+<style>
+    #frame {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        z-index: 9999;
+    }
+</style>

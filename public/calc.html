@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scientific Calculator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #020617;
+      --btn: #1e293b;
+      --btn-op: #334155;
+      --accent: #38bdf8;
+      --text: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #020617, #000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .calculator {
+      background: var(--panel);
+      width: 100%;
+      max-width: 420px;
+      border-radius: 1.25rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .display {
+      background: black;
+      color: var(--accent);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      font-size: clamp(1.2rem, 4vw, 2rem);
+      text-align: right;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+
+    button {
+      background: var(--btn);
+      color: var(--text);
+      border: none;
+      border-radius: 0.75rem;
+      padding: clamp(0.6rem, 2vw, 1rem);
+      font-size: clamp(0.7rem, 2.5vw, 1rem);
+      cursor: pointer;
+      transition: transform 0.05s ease, background 0.15s ease;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    button.operator {
+      background: var(--btn-op);
+      color: var(--accent);
+    }
+
+    button.equal {
+      background: var(--accent);
+      color: black;
+      grid-column: span 2;
+    }
+
+    @media (max-width: 360px) {
+      .buttons {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div id="display" class="display">0</div>
+
+    <div class="buttons">
+      <button class="operator" onclick="clearAll()">AC</button>
+      <button class="operator" onclick="del()">DEL</button>
+      <button class="operator" onclick="append('(')">(</button>
+      <button class="operator" onclick="append(')')">)</button>
+      <button class="operator" onclick="append('/')">÷</button>
+
+      <button class="operator" onclick="append('sin(')">sin</button>
+      <button class="operator" onclick="append('cos(')">cos</button>
+      <button class="operator" onclick="append('tan(')">tan</button>
+      <button class="operator" onclick="append('Math.PI')">π</button>
+      <button class="operator" onclick="append('*')">×</button>
+
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button class="operator" onclick="append('Math.log10(')">log</button>
+      <button class="operator" onclick="append('-')">−</button>
+
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button class="operator" onclick="append('Math.log(')">ln</button>
+      <button class="operator" onclick="append('+')">+</button>
+
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button class="operator" onclick="append('**2')">x²</button>
+      <button class="equal" onclick="calculate()">=</button>
+
+      <button onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button class="operator" onclick="append('Math.sqrt(')">√</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+
+    function append(value) {
+      if (display.textContent === '0') display.textContent = '';
+      display.textContent += value;
+    }
+
+    function clearAll() {
+      display.textContent = '0';
+    }
+
+    function del() {
+      display.textContent = display.textContent.slice(0, -1) || '0';
+    }
+
+    function calculate() {
+      try {
+        const result = Function('return ' + display.textContent)();
+        display.textContent = Number.isFinite(result) ? result : 'Error';
+      } catch {
+        display.textContent = 'Error';
+      }
+    }
+  </script>
+</body>
+</html>
